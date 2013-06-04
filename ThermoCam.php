@@ -1,7 +1,7 @@
 <?php
 
 $ThermoCam = new ThermoCam('gradients/gradient-bry.png');
-$ThermoCam->getImgT('data/tempvalues-1.txt',400);
+$ThermoCam->getImgT('data/tempvalues-1.txt', 400);
 
 class ThermoCam {
 
@@ -10,12 +10,16 @@ class ThermoCam {
     private static $_y = 48;
     private static $_imgT = null;
 
+    /**
+     *
+     * @param string $gradientImgFile path to gradient file.png
+     */
     public function __construct($gradientImgFile) {
         self::$_gradientColorMap = self::_createGradientColorMap($gradientImgFile);
         self::$_imgT = imagecreatetruecolor(self::$_x, self::$_y);
     }
 
-    public function getImgT($dataFile,$widthImgT) {
+    public function getImgT($dataFile, $widthImgT) {
         $file = file($dataFile);
         unset($file[3072]);
         unset($file[3073]);
@@ -41,7 +45,7 @@ class ThermoCam {
         imagefilter(self::$_imgT, IMG_FILTER_SMOOTH, 50);
         $image = new SimpleImage();
         $image->loadObj(self::$_imgT);
-        $image->resizeToWidth((int)$widthImgT);
+        $image->resizeToWidth((int) $widthImgT);
         $image->output();
     }
 

@@ -1,7 +1,7 @@
 <?php
 
-$ThermoCam = new ThermoCam('gradients/gradient-bry.png');
-$ThermoCam->getImgT('data/tempvalues-1.txt', 400);
+//$ThermoCam = new ThermoCam('gradients/gradient-bry.png');
+//$ThermoCam->getImgT('data/tempvalues-1.txt', 400);
 
 class ThermoCam {
 
@@ -9,10 +9,9 @@ class ThermoCam {
     private static $_x = 64;
     private static $_y = 48;
     private static $_imgT = null;
-
+    
     /**
-     *
-     * @param string $gradientImgFile path to gradient file.png
+     * @param string $gradientImgFile gradient file .png (blue..red..yellow bar)
      */
     public function __construct($gradientImgFile) {
         self::$_gradientColorMap = self::_createGradientColorMap($gradientImgFile);

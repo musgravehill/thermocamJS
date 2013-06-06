@@ -10,28 +10,36 @@
         <script>
             var thermalCanvas = document.getElementById("thermalCanvas");
             var ctx = thermalCanvas.getContext('2d');
-            ctx.fillStyle = "rgb(255,165,0)";
-            ctx.fillRect(0, 0, 1, 1);
+            
             
             //gradientMap dataT
             
             var h = 0;
             var v = 47;
             var minT = Math.min.apply(Math, dataT);
-            var maxT = Math.max.apply(Math, dataT);
+            var maxT = Math.max.apply(Math, dataT); alert(minT+'  '+maxT); 
             //echo 'var dataT = [';
             for (var i = 0; i <= 3071; i++) {   //64*48px  = 0..3071 px
-                var T = parseFloat(dataT[i]);
-                //echo $T.',';
-                $colorRGB = self::_temperatureToColor($T, $minT, $maxT);
-                imagesetpixel(self::$_imgT, $h, $v, $colorRGB);
-                $v--;
-                if ($v < 0) {
-                    $v = 47;
-                    $h++;
+                var T = parseFloat(dataT[i]);               
+                
+                var colorRGB = temperatureToColor(T, minT, maxT);                
+                ctx.fillStyle = "rgb("+colorRGB[0]+","+colorRGB[1]+","+colorRGB[2]+")";
+                ctx.fillRect(h, v, 1, 1);
+                v--;
+                if (v < 0) {
+                    v = 47;
+                    h++;
                 }
-            }
+            }    
             
+            function temperatureToColor(T, minT, maxT){
+                var oneStep = (maxT - minT) / gradientMap.length;
+                var pos = Math.round((T - minT) / oneStep) - 1;  // 0 ...1000
+                if (pos < 0) {
+                    pos = 0;
+                }
+                return gradientMap[pos];
+            }
             
         </script>
 

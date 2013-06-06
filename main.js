@@ -16,9 +16,11 @@ function readSingleFile(evt) {
 
 document.getElementById('fileinput').addEventListener('change', readSingleFile, false);  
   
-function makeArrayT(fr){ //read file like array of char    
-    var oneT = '';       
-    for (var n = 0; n < fr.result.length; ++n) {                     
+function makeArrayT(fr){ //read file like array of char  
+    dataT = [];
+    var oneT = '';     
+    var frLength = fr.result.length;
+    for (var n = 0; n < frLength; ++n) {                     
         if (fr.result[n] == '\n'){            
             dataT.push(oneT);
             oneT = '';    
@@ -34,12 +36,12 @@ function drawThermalImage(){
     var scaleV = 10;
     var scaleH = 10;
     var thermalCanvas = document.getElementById("thermalCanvas");
-    var ctx = thermalCanvas.getContext('2d');           
+    var ctx = thermalCanvas.getContext('2d');   
+    ctx.clearRect(0, 0, thermalCanvas.width, thermalCanvas.height);
     var h = 0;
     var v = 47;
     var minT = Math.min.apply(Math, dataT);
-    var maxT = Math.max.apply(Math, dataT);
-    //echo 'var dataT = [';
+    var maxT = Math.max.apply(Math, dataT);    
     for (var i = 0; i <= 3071; i++) {   //64*48px  = 0..3071 px
         var T = parseFloat(dataT[i]);                 
         var colorRGB = temperatureToColor(T, minT, maxT);                
@@ -61,4 +63,10 @@ function temperatureToColor(T, minT, maxT){
         pos = 0;
     }
     return gradientMap[pos];
+}
+
+
+function saveThermalCanvasAsImage(){
+    var thermalCanvas=document.getElementById("thermalCanvas");
+    window.open(thermalCanvas.toDataURL('image/png'));
 }

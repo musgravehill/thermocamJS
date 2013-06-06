@@ -2,12 +2,14 @@
 <html>
     <head>
         <title>TC</title>
-        <script src='/jquery1.8.min.js'></script>
-        <script src='/gradientMap.js'></script>
-        <script src='/main.js'></script>
+
     </head>
     <body>
         <canvas height='480' width='640' id='thermalCanvas'>Обновите браузер</canvas>
-        <input type="file" id="fileinput" />
+        <input type="file" id="fileinput" />  
+        <button onclick="saveThermalCanvasAsImage();">save</button>
     </body>
+    <script src='/jquery1.8.min.js'></script>
+    <script src='/gradientMap.js'></script>
+    <script src='/main.js'></script>
 </html>

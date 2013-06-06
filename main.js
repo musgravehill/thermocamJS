@@ -16,8 +16,11 @@ function readDataTemperatureFile(evt) {
     if (f) {
         var fr = new FileReader();
         fr.onload = function(e) {                         
-            makeArrayTemperatureByFile(fr);  
+            makeArrayTemperatureByFile(fr); 
+            minT = Math.min.apply(Math, dataT);
+            maxT = Math.max.apply(Math, dataT); 
             drawThermalImage();
+            initializeSliderMinMaxT();
         }
         fr.readAsText(f);
     } else { 
@@ -41,8 +44,7 @@ function drawThermalImage(){
     ctx.clearRect(0, 0, thermalCanvas.width, thermalCanvas.height);
     var h = 0;
     var v = 47;
-    minT = Math.min.apply(Math, dataT);
-    maxT = Math.max.apply(Math, dataT);    
+       
     for (var i = 0; i <= 3071; i++) {   //64*48px  = 0..3071 px
         var T = parseFloat(dataT[i]);                 
         var colorRGB = temperatureToColor(T, minT, maxT);                
@@ -66,6 +68,9 @@ function temperatureToColor(T, minT, maxT){
     var pos = Math.round((T - minT) / oneStep) - 1;  // 0 ...1000
     if (pos < 0) {
         pos = 0;
+    }
+    if(pos > (gradientMap.length-1)){
+        pos = gradientMap.length -1;
     }
     return gradientMap[pos];
 }
@@ -110,4 +115,17 @@ thermalCanvas.addEventListener('mousemove', function(evt) {
 }, false);
 
 
-
+function initializeSliderMinMaxT() {
+    $( "#slider-range-MinMaxT" ).slider({
+        range: true,
+        min: minT,
+        max: maxT,
+        values: [ minT, maxT ],
+        slide: function( event, ui ) {
+            $( "#amount" ).val( "" + ui.values[ 0 ] + " - " + ui.values[ 1 ]+"" );
+            minT = ui.values[ 0 ];
+            maxT = ui.values[ 1 ];            
+            drawThermalImage();
+        }
+    });    
+};

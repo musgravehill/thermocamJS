@@ -81,8 +81,10 @@ public static function getJSGradientMap($gradientImgFile) {
         $v = 47;
         $minT = min($file);
         $maxT = max($file);
+        //echo 'var dataT = [';
         for ($i = 0; $i <= 3071; $i++) {   //64*48px  = 0..3071 px
             $T = (float) $file[$i];
+            //echo $T.',';
             $colorRGB = self::_temperatureToColor($T, $minT, $maxT);
             imagesetpixel(self::$_imgT, $h, $v, $colorRGB);
             $v--;
@@ -91,6 +93,7 @@ public static function getJSGradientMap($gradientImgFile) {
                 $h++;
             }
         }
+        //echo '];';
 
         header('Content-Type: image/png');
         imagefilter(self::$_imgT, IMG_FILTER_SMOOTH, 50);

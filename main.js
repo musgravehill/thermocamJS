@@ -1,20 +1,22 @@
-var dataT = [];   //array of float_temperatures   
+var dataT = [];   //array of float_temperatures 0..3071  
 
+var canvasT = [];  //array[0..64][0..47] use on canvas mouseMove\Click
+for (var i=0;i<64;i++) {
+    canvasT[i] = [];
+}
 
-var canvasT = [];  //array[x][y] for drawint message on canvas
-  for (var i=0;i<64;i++) {
-     canvasT[i] = [];
-  }
-
-var scaleV = 10;
-var scaleH = 10;
+var scaleV = 10;//image scale from 48 to 480px
+var scaleH = 10;//image scale from 64 to 640px
+var minT = 0; //minimal Temperature in array
+var maxT = 0; //max Temperature in array
     
-function readSingleFile(evt) {                
+document.getElementById('fileinput').addEventListener('change', readDataTemperatureFile, false);  
+function readDataTemperatureFile(evt) {                
     var f = evt.target.files[0]; 
     if (f) {
         var fr = new FileReader();
         fr.onload = function(e) {                         
-            makeArrayT(fr);  
+            makeArrayTemperatureByFile(fr);  
             drawThermalImage();
         }
         fr.readAsText(f);
@@ -22,24 +24,16 @@ function readSingleFile(evt) {
         alert("Failed to load file");
     }
 }
-
-document.getElementById('fileinput').addEventListener('change', readSingleFile, false);  
   
-function makeArrayT(fr){ //read file like array of char  
-    dataT = [];
-    var oneT = '';     
+function makeArrayTemperatureByFile(fr){ //read file like array of char  
+    dataT = [];    
+    var stringT = '';
     var frLength = fr.result.length;
-    for (var n = 0; n < frLength; ++n) {                     
-        if (fr.result[n] == '\n'){            
-            dataT.push(oneT);
-            oneT = '';    
-        }
-        else{
-            oneT += fr.result[n];
-        }                                           
+    for (var n = 0; n < frLength; ++n) {
+        stringT +=fr.result[n];                                            
     }
-}
-            
+    dataT = stringT.split('\n');
+}            
                   
 function drawThermalImage(){    
     var thermalCanvas = document.getElementById("thermalCanvas");
@@ -47,8 +41,8 @@ function drawThermalImage(){
     ctx.clearRect(0, 0, thermalCanvas.width, thermalCanvas.height);
     var h = 0;
     var v = 47;
-    var minT = Math.min.apply(Math, dataT);
-    var maxT = Math.max.apply(Math, dataT);    
+    minT = Math.min.apply(Math, dataT);
+    maxT = Math.max.apply(Math, dataT);    
     for (var i = 0; i <= 3071; i++) {   //64*48px  = 0..3071 px
         var T = parseFloat(dataT[i]);                 
         var colorRGB = temperatureToColor(T, minT, maxT);                
@@ -60,7 +54,10 @@ function drawThermalImage(){
             v = 47;
             h++;
         }
-    }    
+    }  
+    
+    $("#minT").html(minT);
+    $("#maxT").html(maxT);
 }
             
             
@@ -83,7 +80,11 @@ function saveThermalCanvasAsImage(){
 
 function pinTemperatureByPixelClick(canvas, message,x,y) {
     var context = canvas.getContext('2d');    
-    context.font = 'bold 10pt arial';
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+    context.shadowBlur = 3;
+    context.shadowColor="black";
+    context.font = '10pt arial';
     context.fillStyle = 'white';
     context.fillText(message, x,y);
 }
@@ -98,6 +99,15 @@ function getMousePos(canvas, evt) {
 var thermalCanvas=document.getElementById("thermalCanvas");
 thermalCanvas.addEventListener('click', function(evt) {
     var mousePos = getMousePos(thermalCanvas, evt);
-    var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)]+' C';    
-    pinTemperatureByPixelClick(thermalCanvas, message,mousePos.x, mousePos.y);
+    var message = '. '+canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
+    pinTemperatureByPixelClick(thermalCanvas, message,(mousePos.x-5), mousePos.y);
 }, false);
+
+thermalCanvas.addEventListener('mousemove', function(evt) {
+    var mousePos = getMousePos(thermalCanvas, evt);
+    var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
+    $("#temperatureUnderCursor").html(message);
+}, false);
+
+
+

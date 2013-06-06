@@ -9,7 +9,59 @@ class ThermoCam {
     private static $_x = 64;
     private static $_y = 48;
     private static $_imgT = null;
+
+     
+public static function getJSGradientMap($gradientImgFile) {
+        $gradientImg = imagecreatefrompng($gradientImgFile);
+
+        $image = new SimpleImage();
+        $image->loadObj($gradientImg);
+        $gradientImgWidth = $image->getWidth(); //1000
+        $JSGradientMap = 'var gradientMap = [';
+
+        for ($px_horizontal = 0; $px_horizontal <= ($gradientImgWidth - 2); $px_horizontal++) {
+            $rgb = imagecolorat($gradientImg, $px_horizontal, 0);
+            $r = ($rgb >> 16) & 0xFF;
+            $g = ($rgb >> 8) & 0xFF;
+            $b = $rgb & 0xFF;
+            //$gradientColorMap [] = $rgb; 
+            $JSGradientMap .= "[ $r, $g, $b ],";
+        }
+        $JSGradientMap .= ' [ 255, 252, 17 ]
+    ];  ';
+
+        return $JSGradientMap;
+    }
     
+    
+    
+    /**
+     * convert selected gradient-image into arduino-style array of colors
+     * @param string $gradientImgFile
+     * @return string 
+     */
+    public static function getArduinoGradientMap($gradientImgFile) {
+        $gradientImg = imagecreatefrompng($gradientImgFile);
+
+        $image = new SimpleImage();
+        $image->loadObj($gradientImg);
+        $gradientImgWidth = $image->getWidth(); //1000
+        $arduinoArrayColor = 'int gradientArray[' . ($gradientImgWidth) . '][3] = {';
+
+        for ($px_horizontal = 0; $px_horizontal <= ($gradientImgWidth - 2); $px_horizontal++) {
+            $rgb = imagecolorat($gradientImg, $px_horizontal, 0);
+            $r = ($rgb >> 16) & 0xFF;
+            $g = ($rgb >> 8) & 0xFF;
+            $b = $rgb & 0xFF;
+            //$gradientColorMap [] = $rgb; 
+            $arduinoArrayColor .= "{ $r, $g, $b },";
+        }
+        $arduinoArrayColor .= ' { 255, 252, 17 }
+    };  ';
+
+        return $arduinoArrayColor;
+    }
+
     /**
      * @param string $gradientImgFile gradient file .png (blue..red..yellow bar)
      */

@@ -70,3 +70,38 @@ function saveThermalCanvasAsImage(){
     var thermalCanvas=document.getElementById("thermalCanvas");
     window.open(thermalCanvas.toDataURL('image/png'));
 }
+
+
+function pinTemperatureByPixelClick(){
+    var thermalCanvas=document.getElementById("thermalCanvas");
+    var ctx = thermalCanvas.getContext('2d');  
+    ctx.fillStyle = "white";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("Zibri", 100, 100);
+}
+
+
+
+
+function pinTemperatureByPixelClick(canvas, message,x,y) {
+    var context = canvas.getContext('2d');    
+    context.font = 'bold 10pt arial';
+    context.fillStyle = 'white';
+    context.fillText(message, x,y);
+}
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+var thermalCanvas=document.getElementById("thermalCanvas");
+ 
+
+thermalCanvas.addEventListener('click', function(evt) {
+    var mousePos = getMousePos(thermalCanvas, evt);
+    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;    
+    pinTemperatureByPixelClick(thermalCanvas, message,mousePos.x, mousePos.y);
+}, false);

@@ -9,6 +9,7 @@ var scaleV = 10;//image scale from 48 to 480px
 var scaleH = 10;//image scale from 64 to 640px
 var minT = 0; //minimal Temperature in array
 var maxT = 0; //max Temperature in array
+var arrayTemperatureMaxPos = 64*48-1; //0..3071
     
 document.getElementById('fileinput').addEventListener('change', readDataTemperatureFile, false);  
 function readDataTemperatureFile(evt) {                
@@ -17,8 +18,8 @@ function readDataTemperatureFile(evt) {
         var fr = new FileReader();
         fr.onload = function(e) {                         
             makeArrayTemperatureByFile(fr); 
-            minT = Math.min.apply(Math, dataT);
-            maxT = Math.max.apply(Math, dataT); 
+            minT = Math.min.apply(Math, dataT); 
+            maxT = Math.max.apply(Math, dataT);
             drawThermalImage();
             initializeSliderMinMaxT();
         }
@@ -35,7 +36,8 @@ function makeArrayTemperatureByFile(fr){ //read file like array of char
     for (var n = 0; n < frLength; ++n) {
         stringT +=fr.result[n];                                            
     }
-    dataT = stringT.split('\n');
+    dataT = stringT.split('\n');    
+    dataT.splice(3072, 10);//unset 25,thermal and other rotten      
 }            
                   
 function drawThermalImage(){    
@@ -45,7 +47,7 @@ function drawThermalImage(){
     var h = 0;
     var v = 47;
        
-    for (var i = 0; i <= 3071; i++) {   //64*48px  = 0..3071 px
+    for (var i = 0; i <= arrayTemperatureMaxPos; i++) {   //64*48px  = 0..3071 px
         var T = parseFloat(dataT[i]);                 
         var colorRGB = temperatureToColor(T, minT, maxT);                
         ctx.fillStyle = "rgb("+colorRGB[0]+","+colorRGB[1]+","+colorRGB[2]+")";
@@ -121,8 +123,7 @@ function initializeSliderMinMaxT() {
         min: minT,
         max: maxT,
         values: [ minT, maxT ],
-        slide: function( event, ui ) {
-            $( "#amount" ).val( "" + ui.values[ 0 ] + " - " + ui.values[ 1 ]+"" );
+        slide: function( event, ui ) {            
             minT = ui.values[ 0 ];
             maxT = ui.values[ 1 ];            
             drawThermalImage();

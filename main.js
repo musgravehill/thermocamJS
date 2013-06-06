@@ -1,4 +1,13 @@
-var dataT = [];   //array of float_temperatures    
+var dataT = [];   //array of float_temperatures   
+
+
+var canvasT = [];  //array[x][y] for drawint message on canvas
+  for (var i=0;i<64;i++) {
+     canvasT[i] = [];
+  }
+
+var scaleV = 10;
+var scaleH = 10;
     
 function readSingleFile(evt) {                
     var f = evt.target.files[0]; 
@@ -32,9 +41,7 @@ function makeArrayT(fr){ //read file like array of char
 }
             
                   
-function drawThermalImage(){
-    var scaleV = 10;
-    var scaleH = 10;
+function drawThermalImage(){    
     var thermalCanvas = document.getElementById("thermalCanvas");
     var ctx = thermalCanvas.getContext('2d');   
     ctx.clearRect(0, 0, thermalCanvas.width, thermalCanvas.height);
@@ -47,6 +54,7 @@ function drawThermalImage(){
         var colorRGB = temperatureToColor(T, minT, maxT);                
         ctx.fillStyle = "rgb("+colorRGB[0]+","+colorRGB[1]+","+colorRGB[2]+")";
         ctx.fillRect(h*scaleH, v*scaleV, scaleH, scaleV);
+        canvasT[h][v] = T;
         v--;
         if (v < 0) {
             v = 47;
@@ -72,16 +80,6 @@ function saveThermalCanvasAsImage(){
 }
 
 
-function pinTemperatureByPixelClick(){
-    var thermalCanvas=document.getElementById("thermalCanvas");
-    var ctx = thermalCanvas.getContext('2d');  
-    ctx.fillStyle = "white";
-    ctx.font = "bold 16px Arial";
-    ctx.fillText("Zibri", 100, 100);
-}
-
-
-
 
 function pinTemperatureByPixelClick(canvas, message,x,y) {
     var context = canvas.getContext('2d');    
@@ -98,10 +96,8 @@ function getMousePos(canvas, evt) {
 }
 
 var thermalCanvas=document.getElementById("thermalCanvas");
- 
-
 thermalCanvas.addEventListener('click', function(evt) {
     var mousePos = getMousePos(thermalCanvas, evt);
-    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;    
+    var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)]+' C';    
     pinTemperatureByPixelClick(thermalCanvas, message,mousePos.x, mousePos.y);
 }, false);

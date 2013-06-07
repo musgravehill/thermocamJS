@@ -15,7 +15,7 @@ function readDataTemperatureFile(evt) {
     if (f) {
         var fr = new FileReader();
         fr.onload = function(e) {               
-            makeArrayTemperatureByFile(fr); 
+            makeArrayTemperatureByFile(e); 
             minT = Math.min.apply(Math, dataT); 
             maxT = Math.max.apply(Math, dataT);
             drawThermalImage();
@@ -26,15 +26,8 @@ function readDataTemperatureFile(evt) {
         alert("Failed to load file");
     }
 }  
-function makeArrayTemperatureByFile(fr){ //read file like array of char  
-    
-    dataT = [];    
-    var stringT = '';
-    var frLength = fr.result.length;
-    for (var n = 0; n < frLength; ++n) {
-        stringT +=fr.result[n];                                            
-    }
-    dataT = stringT.split('\n');    
+function makeArrayTemperatureByFile(e){      
+    dataT = e.target.result.split('\n');    
     dataT.splice((arrayTemperatureMaxPos+1), 20);//unset 25,thermal,r64,l48 and other rotten      
 }                      
 function drawThermalImage(){    

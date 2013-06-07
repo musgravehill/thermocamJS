@@ -14,7 +14,7 @@ function readDataTemperatureFile(evt) {
     var f = evt.target.files[0]; 
     if (f) {
         var fr = new FileReader();
-        fr.onload = function(e) {                         
+        fr.onload = function(e) {               
             makeArrayTemperatureByFile(fr); 
             minT = Math.min.apply(Math, dataT); 
             maxT = Math.max.apply(Math, dataT);
@@ -27,6 +27,7 @@ function readDataTemperatureFile(evt) {
     }
 }  
 function makeArrayTemperatureByFile(fr){ //read file like array of char  
+    
     dataT = [];    
     var stringT = '';
     var frLength = fr.result.length;
@@ -34,7 +35,7 @@ function makeArrayTemperatureByFile(fr){ //read file like array of char
         stringT +=fr.result[n];                                            
     }
     dataT = stringT.split('\n');    
-    dataT.splice((arrayTemperatureMaxPos+1), 20);//unset 25,thermal and other rotten      
+    dataT.splice((arrayTemperatureMaxPos+1), 20);//unset 25,thermal,r64,l48 and other rotten      
 }                      
 function drawThermalImage(){    
     var thermalCanvas = document.getElementById("thermalCanvas");
@@ -90,7 +91,7 @@ function getMousePos(canvas, evt) {
     };
 }
 function initializeSliderMinMaxT() {
-    var deltaLeftRight = Math.round((maxT-minT)/2);
+    var deltaLeftRight = Math.round((maxT-minT)/2);//make slider more wide
     $( "#slider-range-MinMaxT" ).slider({
         range: true,
         min: minT-deltaLeftRight,
@@ -116,5 +117,3 @@ thermalCanvas.addEventListener('mousemove', function(evt) {
     var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
     $("#temperatureUnderCursor").html(message);
 }, false);
-
-

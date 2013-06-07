@@ -1,10 +1,8 @@
-var dataT = [];   //array of float_temperatures 0..3071  
-
+var dataT = [];   //array of float_temperatures (make from file) 0..3071  
 var canvasT = [];  //array[0..64][0..47] use on canvas mouseMove\Click
 for (var i=0;i<64;i++) {
     canvasT[i] = [];
 }
-
 var scaleV = 10;//image scale from 48 to 480px
 var scaleH = 10;//image scale from 64 to 640px
 var minT = 0; //minimal Temperature in array
@@ -27,8 +25,7 @@ function readDataTemperatureFile(evt) {
     } else { 
         alert("Failed to load file");
     }
-}
-  
+}  
 function makeArrayTemperatureByFile(fr){ //read file like array of char  
     dataT = [];    
     var stringT = '';
@@ -37,19 +34,17 @@ function makeArrayTemperatureByFile(fr){ //read file like array of char
         stringT +=fr.result[n];                                            
     }
     dataT = stringT.split('\n');    
-    dataT.splice(3072, 10);//unset 25,thermal and other rotten      
-}            
-                  
+    dataT.splice((arrayTemperatureMaxPos+1), 20);//unset 25,thermal and other rotten      
+}                      
 function drawThermalImage(){    
     var thermalCanvas = document.getElementById("thermalCanvas");
     var ctx = thermalCanvas.getContext('2d');   
     ctx.clearRect(0, 0, thermalCanvas.width, thermalCanvas.height);
     var h = 0;
-    var v = 47;
-       
+    var v = 47;       
     for (var i = 0; i <= arrayTemperatureMaxPos; i++) {   //64*48px  = 0..3071 px
         var T = parseFloat(dataT[i]);                 
-        var colorRGB = temperatureToColor(T, minT, maxT);                
+        var colorRGB = temperatureToColor(T);                
         ctx.fillStyle = "rgb("+colorRGB[0]+","+colorRGB[1]+","+colorRGB[2]+")";
         ctx.fillRect(h*scaleH, v*scaleV, scaleH, scaleV);
         canvasT[h][v] = T;
@@ -58,14 +53,11 @@ function drawThermalImage(){
             v = 47;
             h++;
         }
-    }  
-    
+    }      
     $("#minT").html(minT);
     $("#maxT").html(maxT);
-}
-            
-            
-function temperatureToColor(T, minT, maxT){
+}              
+function temperatureToColor(T){
     var oneStep = (maxT - minT) / gradientMap.length;
     var pos = Math.round((T - minT) / oneStep) - 1;  // 0 ...1000
     if (pos < 0) {
@@ -76,15 +68,10 @@ function temperatureToColor(T, minT, maxT){
     }
     return gradientMap[pos];
 }
-
-
 function saveThermalCanvasAsImage(){
     var thermalCanvas=document.getElementById("thermalCanvas");
     window.open(thermalCanvas.toDataURL('image/png'));
 }
-
-
-
 function pinTemperatureByPixelClick(canvas, message,x,y) {
     var context = canvas.getContext('2d');    
     context.shadowOffsetX = 0;
@@ -102,6 +89,20 @@ function getMousePos(canvas, evt) {
         y: evt.clientY - rect.top
     };
 }
+function initializeSliderMinMaxT() {
+    var deltaLeftRight = Math.round((maxT-minT)/2);
+    $( "#slider-range-MinMaxT" ).slider({
+        range: true,
+        min: minT-deltaLeftRight,
+        max: maxT+deltaLeftRight,
+        values: [ minT, maxT ],
+        slide: function( event, ui ) {            
+            minT = ui.values[ 0 ];
+            maxT = ui.values[ 1 ];            
+            drawThermalImage();
+        }
+    });    
+};
 
 var thermalCanvas=document.getElementById("thermalCanvas");
 thermalCanvas.addEventListener('click', function(evt) {
@@ -117,16 +118,3 @@ thermalCanvas.addEventListener('mousemove', function(evt) {
 }, false);
 
 
-function initializeSliderMinMaxT() {
-    $( "#slider-range-MinMaxT" ).slider({
-        range: true,
-        min: minT,
-        max: maxT,
-        values: [ minT, maxT ],
-        slide: function( event, ui ) {            
-            minT = ui.values[ 0 ];
-            maxT = ui.values[ 1 ];            
-            drawThermalImage();
-        }
-    });    
-};

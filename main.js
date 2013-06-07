@@ -1,3 +1,6 @@
+/**
+ * @author musgravehill
+ */
 var dataT = [];   //array of float_temperatures (make from file) 0..3071  
 var canvasT = [];  //array[0..64][0..47] use on canvas mouseMove\Click
 for (var i=0;i<64;i++) {
@@ -72,9 +75,9 @@ function pinTemperatureByPixelClick(canvas, message,x,y) {
     context.shadowOffsetY = 0;
     context.shadowBlur = 3;
     context.shadowColor="black";
-    context.font = '10pt arial';
+    context.font = '14pt Arial';    
     context.fillStyle = 'white';
-    context.fillText(message, x,y);
+    context.fillText(message, x,y);   
 }
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -109,7 +112,7 @@ thermalCanvas.addEventListener('click', function(evt) {
 
 thermalCanvas.addEventListener('mousemove', function(evt) {
     var mousePos = getMousePos(thermalCanvas, evt);
-    mousePos.x -=5;
+    mousePos.x -=5; //cause I draw 10*10px square. Cursor in center of square, but I need top-left pixel to get T
     mousePos.y -=5;
     var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
     $("#temperatureUnderCursor").html(message);

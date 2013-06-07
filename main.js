@@ -101,12 +101,16 @@ function initializeSliderMinMaxT() {
 var thermalCanvas=document.getElementById("thermalCanvas");
 thermalCanvas.addEventListener('click', function(evt) {
     var mousePos = getMousePos(thermalCanvas, evt);
+    mousePos.x -=5; //cause I draw 10*10px square. Cursor in center of square, but I need top-left pixel to get T
+    mousePos.y -=5;
     var message = '. '+canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
-    pinTemperatureByPixelClick(thermalCanvas, message,(mousePos.x-5), mousePos.y);
+    pinTemperatureByPixelClick(thermalCanvas, message,mousePos.x, mousePos.y);
 }, false);
 
 thermalCanvas.addEventListener('mousemove', function(evt) {
     var mousePos = getMousePos(thermalCanvas, evt);
+    mousePos.x -=5;
+    mousePos.y -=5;
     var message = canvasT[Math.round(mousePos.x/scaleH)][Math.round(mousePos.y/scaleV)];    
     $("#temperatureUnderCursor").html(message);
 }, false);
